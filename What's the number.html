@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .game-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 80px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 30px; /* To prevent layout shift */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>🔢 Guess the Number!</h1>
+        <p>I'm thinking of a number between 1 and 100.</p>
+        <p>Enter your guess below:</p>
+        <input type="number" id="guessInput" min="1" max="100">
+        <button onclick="checkGuess()">Guess</button>
+        <p id="message"></p>
+        <p>Guesses remaining: <span id="remainingGuesses">10</span></p>
+    </div>
+
+    <script>
+        // --- Game Logic ---
+        const maxGuesses = 10;
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let guesses = 0;
+        let guessesRemaining = maxGuesses;
+
+        const guessInput = document.getElementById('guessInput');
+        const messageDisplay = document.getElementById('message');
+        const remainingGuessesDisplay = document.getElementById('remainingGuesses');
+
+        // Function to check the user's guess
+        function checkGuess() {
+            const userGuess = parseInt(guessInput.value);
+
+            // Basic input validation
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+                messageDisplay.textContent = "❌ Please enter a valid number between 1 and 100.";
+                messageDisplay.style.color = "orange";
+                return;
+            }
+
+            guesses++;
+            guessesRemaining--;
+            remainingGuessesDisplay.textContent = guessesRemaining;
+
+            if (userGuess === secretNumber) {
+                // Correct guess
+                messageDisplay.textContent = `🎉 Congratulations! You guessed the number ${secretNumber} in ${guesses} attempts!`;
+                messageDisplay.style.color = "green";
+                // Disable input after winning
+                guessInput.disabled = true;
+                document.querySelector('button').disabled = true;
+            } else if (guessesRemaining === 0) {
+                // Game over
+                messageDisplay.textContent = `😭 Game Over! The number was ${secretNumber}.`;
+                messageDisplay.style.color = "red";
+                // Disable input
+                guessInput.disabled = true;
+                document.querySelector('button').disabled = true;
+            } else if (userGuess < secretNumber) {
+                // Too low
+                messageDisplay.textContent = "⬆️ Too low! Try a higher number.";
+                messageDisplay.style.color = "#007bff";
+            } else {
+                // Too high
+                messageDisplay.textContent = "⬇️ Too high! Try a lower number.";
+                messageDisplay.style.color = "#007bff";
+            }
+
+            // Clear the input field for the next guess
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        // Add a listener to allow pressing 'Enter' to submit the guess
+        guessInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkGuess();
+            }
+        });
+    </script>
+</body>
+</html>
